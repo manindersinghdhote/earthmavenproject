@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the pom.xml and source code into the container
 COPY pom.xml ./
-COPY src ./src
+COPY ./src/main/webapp /usr/share/nginx/html
 
 # Run Maven to package the project
 RUN mvn clean package
@@ -18,7 +18,7 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 
 # Copy the built WAR file (or static files) from the builder stage
-COPY --from=builder /app/target/*.war .
+COPY --from=builder /app/target/*.war /usr/share/nginx/html
 
 # Expose port 80 for the web server
 EXPOSE 80
