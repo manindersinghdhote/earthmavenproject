@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'  // Path to your Maven installation
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk'  // Path to your Java installation
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'  // Path to your Java installation
     }
 
     stages {
