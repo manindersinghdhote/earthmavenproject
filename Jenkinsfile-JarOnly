@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = '/usr/share/maven'  // Path to your Maven installation
+        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk'  // Path to your Java installation
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone the repository from GitHub
+                git 'https://github.com/manindersinghdhote/earthmavenproject.git'
+            }
+        }
+
+        stage('Setup Java and Maven') {
+            steps {
+                script {
+                    // Check if Java is installed
+                    def javaInstalled = sh(script: 'which java', returnStatus: true)
+                    if (javaInstalled != 0) {
+                        echo 'Java is not installed. Installing Java...'
+                        // Install Java (this is for Debian-based systems, adjust if needed for your OS)
+                        sh '''
+                            apt-get update
+                            apt-get install -y openjdk-11-jdk
+                        '''
+                    } else {
+                        echo 'Java is already installed.'
+                    }
+
+                    // Check if Maven is installed
+                    def mavenInstalled = sh(script: 'which mvn', returnStatus: true)
+                    if (mavenInstalled != 0) {
+                        echo 'Maven is not installed. Installing Maven...'
+                        // Install Maven (this is for Debian-based systems, adjust if needed for your OS)
+                        sh '''
+                            apt-get install -y maven
+                        '''
+                    } else {
+                        echo 'Maven is already installed.'
+                    }
+
+                    // Verify Java and Maven installations
+                    sh 'java -version'
+                    sh 'mvn -v'
+                }
+            }
+        }
+
+        stage('Build and Package') {
+            steps {
+                // Run Maven clean and package commands to build the artifact
+                script {
+                    // Clean the project and package using the pom.xml file
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
+        stage('Archive Artifact') {
+            steps {
+                // Archive the generated artifact (e.g., .jar or .war) as an artifact in Jenkins
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+                // If you're generating a WAR, use '**/target/*.war' instead of '**/target/*.jar'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and packaging successful!'
+        }
+        failure {
+            echo 'Build or packaging failed.'
+        }
+    }
+}
