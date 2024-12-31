@@ -62,7 +62,7 @@ pipeline {
         stage('Archive Artifact') {
             steps {
                 // Archive the generated artifact (e.g., .jar or .war) as an artifact in Jenkins
-                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+                archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
                 // If you're generating a WAR, use '**/target/*.war' instead of '**/target/*.jar'
             }
         }
